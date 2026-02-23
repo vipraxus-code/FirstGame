@@ -1,5 +1,6 @@
 import sys
 import pygame
+from pygame.event import event_name
 from settings import Settings
 from ship import Ship
 
@@ -16,6 +17,7 @@ class Game:
     def run_game(self):
         while True:
             self._check_events()
+            self.ship.update()
             self._update_screen()
             self.clock.tick(self.settings.fps)
 
@@ -23,15 +25,34 @@ class Game:
         for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit()
+                elif event.type == pygame.MOUSEWHEEL:
+                    if event.y > 0:
+                        if self.ship.speed < 10:
+                            self.ship.speed += 1
+                    elif event.y < 0:
+                        if self.ship.speed > 1:
+                            self.ship.speed -= 1
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 2:
+                        self.ship.speed = self.ship.default_speed
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_d:
-                        self.ship.rect.x += 5
-                    elif event.key == pygame.K_a:
-                        self.ship.rect.x -= 5
-                    elif event.key == pygame.K_s:
-                        self.ship.rect.y += 5
-                    elif event.key == pygame.K_w:
-                        self.ship.rect.y -= 5
+                        self.ship.moving_right = True
+                    if event.key == pygame.K_a:
+                        self.ship.moving_left = True
+                    if event.key == pygame.K_w:
+                        self.ship.moving_top = True
+                    if event.key == pygame.K_s:
+                        self.ship.moving_bottom = True
+                elif event.type == pygame.KEYUP:
+                    if event.key == pygame.K_d:
+                        self.ship.moving_right = False
+                    if event.key == pygame.K_a:
+                        self.ship.moving_left = False
+                    if event.key == pygame.K_w:
+                        self.ship.moving_top = False
+                    if event.key == pygame.K_s:
+                        self.ship.moving_bottom = False
 
     def _update_screen(self):
         self.screen.fill(self.settings.bg_color)
@@ -41,4 +62,3 @@ class Game:
 if __name__ == "__main__":
     game = Game()
     game.run_game()
-    
