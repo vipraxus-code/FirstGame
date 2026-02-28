@@ -1,8 +1,8 @@
 import sys
 import pygame
-from pygame.event import event_name
 from settings import Settings
-from ship import Ship
+from obj.ship import Ship
+from obj.bullet import Bullet
 
 
 class Game:
@@ -13,11 +13,13 @@ class Game:
         pygame.display.set_caption(self.settings.caption)
         self.clock = pygame.time.Clock()
         self.ship = Ship(self)
+        self.bullets = pygame.sprite.Group()
 
     def run_game(self):
         while True:
             self._check_events()
             self.ship.update()
+            self.bullets.update()
             self._update_screen()
             self.clock.tick(self.settings.fps)
 
@@ -45,6 +47,8 @@ class Game:
             self.ship.moving_bottom = True
         if event.key == pygame.K_q:
             sys.exit()
+        if event.key == pygame.K_SPACE:
+            self._fire_bullet()
 
     def _check_keyup_events(self, event):
         if event.key == pygame.K_d:
@@ -68,11 +72,13 @@ class Game:
         if event.button == 2:
             self.ship.speed = self.ship.default_speed
 
+    def _fire_bullet(self):
+        new_bullet = Bullet(self)
+        self.bullets.add(new_bullet)
+
     def _update_screen(self):
         self.screen.fill(self.settings.bg_color)
+        for bullet in self.bullets.sprites():
+            bullet.draw_bullet()
         self.ship.blitme()
         pygame.display.flip()
-
-if __name__ == "__main__":
-    game = Game()
-    game.run_game()
