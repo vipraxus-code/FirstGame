@@ -12,6 +12,6 @@ class SettingsShip:
     def __init__(self):
         self.default_speed: int = 3
         self.bullet_speed: float = 5.0
-        self.bullet_width: int = 3
-        self.bullet_height: int = 15
-        self.bullet_color: int = (255, 0, 0)
+        self.bullet_width: int = 10
+        self.bullet_height: int = 30
+        self.bullet_color: int = (255, 0, 255)
