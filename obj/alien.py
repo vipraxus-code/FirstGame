@@ -8,6 +8,6 @@ class Alien(Sprite):
         self.image = pygame.image.load("images/alien.bmp")
         self.image = pygame.transform.scale(self.image, (self.image.get_width() * game.settings.alien.sprite_scale_x, self.image.get_width() * game.settings.alien.sprite_scale_y))
         self.rect = self.image.get_rect()
-        self.rect.x = self.rect.width
-        self.rect.y = self.rect.height
+        self.rect.x = 85
+        self.rect.y = 85
         self.x = float(self.rect.x)

@@ -1,3 +1,4 @@
+from calendar import c
 import sys
 import pygame
 from settings import Settings
@@ -91,10 +92,25 @@ class Game:
             bullet.draw_bullet()
         self.ship.blitme()
         self.aliens.draw(self.screen)
-        for alien in self.aliens.sprites():
-            pygame.draw.rect(self.screen, (0, 255, 0), alien.rect, 2)
+        
+        for alien in self.aliens.sprites():                           # DEBUG
+            pygame.draw.rect(self.screen, (0, 255, 0), alien.rect, 2) # DEBUG
+        
         pygame.display.flip()
 
     def _create_fleet(self):
         alien = Alien(self)
-        self.aliens.add(alien)
+        current_x = alien.rect.x
+        current_y = alien.rect.y
+        while current_y < (self.settings.screen_height - alien.image.get_height() * 3):
+            while current_x < (self.settings.screen_width - alien.image.get_width()):
+                self._create_alien(current_x, current_y)
+                current_x += alien.image.get_width() * 1.5
+            current_x = alien.rect.x
+            current_y += alien.image.get_height() * 1.5
+
+    def _create_alien(self, x_position, y_position):
+        new_alien = Alien(self)
+        new_alien.rect.x = x_position
+        new_alien.rect.y = y_position
+        self.aliens.add(new_alien)
