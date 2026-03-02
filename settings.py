@@ -6,7 +6,12 @@ class Settings:
         self.fps: int = 180
         self.caption: str = "SPACE SHIP"
         self.ship: Settings = SettingsShip()
+        self.alien: Settings = SettingsAlien()
 
+class SettingsAlien:
+    def __init__(self):
+        self.sprite_scale_x = 0.192
+        self.sprite_scale_y = 0.192
 
 class SettingsShip:
     def __init__(self):

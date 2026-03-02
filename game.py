@@ -3,6 +3,7 @@ import pygame
 from settings import Settings
 from obj.ship import Ship
 from obj.bullet import Bullet
+from obj.alien import Alien
 
 
 class Game:
@@ -14,6 +15,8 @@ class Game:
         self.clock = pygame.time.Clock()
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
+        self.aliens = pygame.sprite.Group()
+        self._create_fleet()
 
     def run_game(self):
         while True:
@@ -31,16 +34,16 @@ class Game:
 
     def _check_events(self):
         for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    sys.exit()
-                if event.type == pygame.MOUSEWHEEL:
-                    self._check_mousewheel_events(event)
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    self._check_mousebutton_events(event)
-                if event.type == pygame.KEYDOWN:
-                    self._check_keydown_events(event)
-                if event.type == pygame.KEYUP:
-                    self._check_keyup_events(event)
+            if event.type == pygame.QUIT:
+                sys.exit()
+            if event.type == pygame.MOUSEWHEEL:
+                self._check_mousewheel_events(event)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                self._check_mousebutton_events(event)
+            if event.type == pygame.KEYDOWN:
+                self._check_keydown_events(event)
+            if event.type == pygame.KEYUP:
+                self._check_keyup_events(event)
 
     def _check_keydown_events(self, event):
         if event.key == pygame.K_d:
@@ -87,4 +90,11 @@ class Game:
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
         self.ship.blitme()
+        self.aliens.draw(self.screen)
+        for alien in self.aliens.sprites():
+            pygame.draw.rect(self.screen, (0, 255, 0), alien.rect, 2)
         pygame.display.flip()
+
+    def _create_fleet(self):
+        alien = Alien(self)
+        self.aliens.add(alien)
