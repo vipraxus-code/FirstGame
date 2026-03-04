@@ -1,4 +1,3 @@
-from calendar import c
 import sys
 import pygame
 from settings import Settings
@@ -24,6 +23,7 @@ class Game:
             self._check_events()
             self.ship.update()
             self._update_bullets()
+            self._update_aliens()
             self._update_screen()
             self.clock.tick(self.settings.fps)
 
@@ -92,6 +92,7 @@ class Game:
             bullet.draw_bullet()
         self.ship.blitme()
         self.aliens.draw(self.screen)
+        coliisions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
         
         for alien in self.aliens.sprites():                           # DEBUG
             pygame.draw.rect(self.screen, (0, 255, 0), alien.rect, 2) # DEBUG
@@ -114,3 +115,18 @@ class Game:
         new_alien.rect.x = x_position
         new_alien.rect.y = y_position
         self.aliens.add(new_alien)
+
+    def _update_aliens(self):
+        self._check_fleet_edges()
+        self.aliens.update()
+
+    def _check_fleet_edges(self):
+        for alien in self.aliens.sprites():
+            if alien.check_edges():
+                self._change_fleet_direction()
+                break
+
+    def _change_fleet_direction(self):
+        for alien in self.aliens.sprites():
+            alien.rect.y += self.settings.alien.drop_speed
+        self.settings.alien.fleet_direction *= -1

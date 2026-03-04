@@ -10,8 +10,12 @@ class Settings:
 
 class SettingsAlien:
     def __init__(self):
-        self.sprite_scale_x = 0.192
-        self.sprite_scale_y = 0.192
+        self.start_position: int = 85
+        self.sprite_scale_x: float = 0.192
+        self.sprite_scale_y: float = 0.192
+        self.speed: int = 1
+        self.drop_speed: int = 10
+        self.fleet_direction: int = 1 # 1=right, -1=left
 
 class SettingsShip:
     def __init__(self):
