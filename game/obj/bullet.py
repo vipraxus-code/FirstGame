@@ -3,7 +3,9 @@ from pygame.sprite import Sprite
 
 
 class Bullet(Sprite):
+    """Bullet projectile."""
     def __init__(self, game):
+        """Initializes the bullet."""
         super().__init__()
         self.screen = game.screen
         self.settings = game.settings.ship
@@ -15,8 +17,10 @@ class Bullet(Sprite):
         self.y = float(self.rect.y)
 
     def update(self):
+        """Moves the bullet."""
         self.y -= self.settings.bullet_speed
         self.rect.y = self.y
     
     def draw_bullet(self):
+        """Draws the bullet."""
         pygame.draw.rect(self.screen, self.color, self.rect )
