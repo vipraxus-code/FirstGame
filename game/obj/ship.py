@@ -29,3 +29,7 @@ class Ship:
             self.rect.y -= self.speed
         if self.moving_bottom and self.rect.bottom < self.screen_rect.bottom:
             self.rect.y += self.speed
+
+    def center_ship(self):
+        """Centers the ship"""
+        self.rect.midbottom = self.screen_rect.midbottom

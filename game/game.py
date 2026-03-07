@@ -1,6 +1,8 @@
 import sys
 import pygame
+from time import sleep
 from game.settings import Settings
+from game.obj.gamestats import GameStats
 from game.obj.ship import Ship
 from game.obj.bullet import Bullet
 from game.obj.alien import Alien
@@ -12,6 +14,7 @@ class Game:
         """Initializes game state."""
         pygame.init()
         self.settings = Settings()
+        self.stats = GameStats(self)
         self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
         pygame.display.set_caption(self.settings.caption)
         self.clock = pygame.time.Clock()
@@ -36,7 +39,14 @@ class Game:
         for bullet in self.bullets.copy():
             if bullet.rect.bottom <= 0:
                 self.bullets.remove(bullet)
+        self._check_bullet_alien_colissions()
+
+    def _check_bullet_alien_colissions(self):
+        """Handles collisions between bullets and aliens."""
         collisions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
+        if not self.aliens:
+            self.bullets.empty()
+            self._create_fleet()
 
     def _check_events(self):
         """Handles events."""
@@ -105,8 +115,8 @@ class Game:
         self.ship.blitme()
         self.aliens.draw(self.screen)
         
-        for alien in self.aliens.sprites():                           # DEBUG
-            pygame.draw.rect(self.screen, (0, 255, 0), alien.rect, 2) # DEBUG
+        for alien in self.aliens.sprites():                                                         # DEBUG
+            pygame.draw.rect(self.screen, (0, 255, 0), alien.rect, 2)                               # DEBUG
         
         pygame.display.flip()
 
@@ -133,16 +143,29 @@ class Game:
         """Updates aliens."""
         self._check_fleet_edges()
         self.aliens.update()
+        if pygame.sprite.spritecollideany(self.ship, self.aliens):
+            self._ship_hit()
 
     def _check_fleet_edges(self):
         """Checks if fleet touches screen edges."""
         for alien in self.aliens.sprites():
             if alien.check_edges():
+                self.settings.aliens.drop_speed = 50
                 self._change_fleet_direction()
                 break
 
     def _change_fleet_direction(self):
         """Changes direction and drops the fleet."""
         for alien in self.aliens.sprites():
-            alien.rect.y += self.settings.alien.drop_speed
-        self.settings.alien.fleet_direction *= -1
+            alien.rect.y += self.settings.aliens.drop_speed
+        self.settings.aliens.fleet_direction *= -1
+
+    def _ship_hit(self):
+        """Handles ship hitting"""
+        self.stats.ships_left -= 1
+        self.aliens.empty()
+        self.bullets.empty()
+        self._create_fleet()
+        self.ship.center_ship()
+        sleep(0.5)
+        print(self.stats.ships_left)                                                                # DEBUG
