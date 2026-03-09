@@ -3,7 +3,9 @@ from pygame.sprite import Sprite
 
 
 class Alien(Sprite):
+    """""" # TODO
     def __init__(self, game):
+        """""" # TODO
         super().__init__()
         self.screen = game.screen
         self.settings = game.settings
@@ -14,7 +16,9 @@ class Alien(Sprite):
         self.speed = game.settings.aliens.speed
 
     def update(self):
+        """""" # TODO
         self.rect.x += (self.settings.aliens.speed * self.settings.aliens.fleet_direction)
 
     def check_edges(self):
+        """""" # TODO
         return (self.rect.right >= self.settings.screen_width) or (self.rect.left <=0)

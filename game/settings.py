@@ -17,7 +17,7 @@ class SettingsAliens:
         self.sprite_scale_x: float = 0.192
         self.sprite_scale_y: float = 0.192
         self.speed: int = 1
-        self.drop_speed: int = 10
+        self.drop_speed: int = 5
         self.fleet_direction: int = 1 # 1=right, -1=left
 
 class SettingsShip:
@@ -26,6 +26,6 @@ class SettingsShip:
         self.ships_limit: int = 3
         self.default_speed: int = 3
         self.bullet_speed: float = 10.0
-        self.bullet_width: int = 10
+        self.bullet_width: int = 20
         self.bullet_height: int = 30
         self.bullet_color: int = (255, 0, 255)

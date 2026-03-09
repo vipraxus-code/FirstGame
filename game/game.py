@@ -6,6 +6,7 @@ from game.obj.gamestats import GameStats
 from game.obj.ship import Ship
 from game.obj.bullet import Bullet
 from game.obj.alien import Alien
+from game.obj.button import Button
 
 
 class Game:
@@ -22,16 +23,19 @@ class Game:
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
         self._create_fleet()
+        self.game_active = False
+        self.play_button = Button(self, "Play")
 
     def run_game(self):
         """Runs the game loop."""
         while True:
             self._check_events()
-            self.ship.update()
-            self._update_bullets()
-            self._update_aliens()
             self._update_screen()
             self.clock.tick(self.settings.fps)
+            if self.game_active:
+                self.ship.update()
+                self._update_bullets()
+                self._update_aliens()
 
     def _update_bullets(self):
         """Updates bullets."""
@@ -49,7 +53,7 @@ class Game:
             self._create_fleet()
 
     def _check_events(self):
-        """Handles events."""
+        """Handles all events."""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
@@ -63,7 +67,7 @@ class Game:
                 self._check_keyup_events(event)
 
     def _check_keydown_events(self, event):
-        """Handles keydown."""
+        """Handles keydown events."""
         if event.key == pygame.K_d:
             self.ship.moving_right = True
         if event.key == pygame.K_a:
@@ -74,11 +78,13 @@ class Game:
             self.ship.moving_bottom = True
         if event.key == pygame.K_q:
             sys.exit()
+        if event.key == pygame.K_p:
+            self._play_button_pressed()
         if event.key == pygame.K_SPACE:
             self._fire_bullet()
 
     def _check_keyup_events(self, event):
-        """Handles keyup."""
+        """Handles keyup events."""
         if event.key == pygame.K_d:
             self.ship.moving_right = False
         if event.key == pygame.K_a:
@@ -89,23 +95,36 @@ class Game:
             self.ship.moving_bottom = False
 
     def _check_mousewheel_events(self, event):
-        """Handles mouse wheel."""
+        """Handles mouse wheel events."""
         if event.y > 0:
             if self.ship.speed < 10:
                 self.ship.speed += 1
-        elif event.y < 0:
+        if event.y < 0:
             if self.ship.speed > 1:
                 self.ship.speed -= 1
-        
+   
     def _check_mousebutton_events(self, event):
-        """Handles mouse click."""
+        """Handles mouse button events."""
+        mouse_pos = pygame.mouse.get_pos()
         if event.button == 2:
             self.ship.speed = self.ship.default_speed
+        if self.play_button.rect.collidepoint(mouse_pos) and not self.game_active:
+            self._play_button_pressed()
+
+    def _play_button_pressed(self):
+        self.stats.reset_stats()
+        self.game_active = True
+        self.bullets.empty()
+        self.aliens.empty()
+        self._create_fleet()
+        self.ship.center_ship()
+        pygame.mouse.set_visible(False)
 
     def _fire_bullet(self):
         """Fires a bullet."""
-        new_bullet = Bullet(self)
-        self.bullets.add(new_bullet)
+        if self.game_active:
+            new_bullet = Bullet(self)
+            self.bullets.add(new_bullet)
 
     def _update_screen(self):
         """Draws the frame."""
@@ -114,10 +133,10 @@ class Game:
             bullet.draw_bullet()
         self.ship.blitme()
         self.aliens.draw(self.screen)
-        
         for alien in self.aliens.sprites():                                                         # DEBUG
             pygame.draw.rect(self.screen, (0, 255, 0), alien.rect, 2)                               # DEBUG
-        
+        if not self.game_active:
+            self.play_button.draw_button()
         pygame.display.flip()
 
     def _create_fleet(self):
@@ -125,7 +144,7 @@ class Game:
         alien = Alien(self)
         current_x = alien.rect.x
         current_y = alien.rect.y
-        while current_y < (self.settings.screen_height - alien.image.get_height() * 3):
+        while current_y < (self.settings.screen_height - alien.image.get_height() * 5):
             while current_x < (self.settings.screen_width - alien.image.get_width()):
                 self._create_alien(current_x, current_y)
                 current_x += alien.image.get_width() * 1.5
@@ -143,14 +162,20 @@ class Game:
         """Updates aliens."""
         self._check_fleet_edges()
         self.aliens.update()
+        ship_hit = False
         if pygame.sprite.spritecollideany(self.ship, self.aliens):
-            self._ship_hit()
+            ship_hit = True
+        else:
+            if self._check_aliens_bottom():
+                ship_hit = True
+        if ship_hit:
+            self._ship_hit() 
 
     def _check_fleet_edges(self):
         """Checks if fleet touches screen edges."""
         for alien in self.aliens.sprites():
             if alien.check_edges():
-                self.settings.aliens.drop_speed = 50
+                self.settings.aliens.drop_speed += 5
                 self._change_fleet_direction()
                 break
 
@@ -162,10 +187,20 @@ class Game:
 
     def _ship_hit(self):
         """Handles ship hitting"""
-        self.stats.ships_left -= 1
-        self.aliens.empty()
-        self.bullets.empty()
-        self._create_fleet()
-        self.ship.center_ship()
-        sleep(0.5)
-        print(self.stats.ships_left)                                                                # DEBUG
+        if self.stats.ships_left > 1:
+            self.stats.ships_left -= 1
+            print(self.stats.ships_left)                                                            # DEBUG
+            self.aliens.empty()
+            self.bullets.empty()
+            self._create_fleet()
+            self.ship.center_ship()
+            sleep(0.5)
+        else:
+            self.game_active = False
+            pygame.mouse.set_visible(True)
+        
+    def _check_aliens_bottom(self):
+        """Hits ship if any alien reaches bottom of the screen."""
+        for alien in self.aliens.sprites():
+            if alien.rect.bottom >= self.settings.screen_height:
+                return True
