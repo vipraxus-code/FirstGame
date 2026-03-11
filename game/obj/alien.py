@@ -3,9 +3,9 @@ from pygame.sprite import Sprite
 
 
 class Alien(Sprite):
-    """""" # TODO
+    """Creates alien fleet."""
     def __init__(self, game):
-        """""" # TODO
+        """Iniatializes alien fleet."""
         super().__init__()
         self.screen = game.screen
         self.settings = game.settings
@@ -13,12 +13,13 @@ class Alien(Sprite):
         self.image = pygame.transform.scale(self.image, (self.image.get_width() * self.settings.aliens.sprite_scale_x, self.image.get_height() * self.settings.aliens.sprite_scale_y))
         self.rect = self.image.get_rect()
         self.rect.x = self.rect.y = self.settings.aliens.start_position
-        self.speed = game.settings.aliens.speed
+        self.x = float(self.rect.x)
 
     def update(self):
-        """""" # TODO
-        self.rect.x += (self.settings.aliens.speed * self.settings.aliens.fleet_direction)
+        """Updates alien fleet."""
+        self.x += (self.settings.aliens.speed * self.settings.aliens.fleet_direction)
+        self.rect.x = self.x
 
     def check_edges(self):
-        """""" # TODO
+        """Checks if alien fleet collides edges of the screen."""
         return (self.rect.right >= self.settings.screen_width) or (self.rect.left <=0)

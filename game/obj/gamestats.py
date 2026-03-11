@@ -8,3 +8,4 @@ class GameStats:
     def reset_stats(self):
         """Resets game statistics"""
         self.ships_left = self.settings.ship.ships_limit
+        self.settings.aliens.speed = self.settings.aliens.default_speed

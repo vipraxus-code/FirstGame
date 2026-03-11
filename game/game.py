@@ -47,10 +47,11 @@ class Game:
 
     def _check_bullet_alien_colissions(self):
         """Handles collisions between bullets and aliens."""
-        collisions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
+        collisions = pygame.sprite.groupcollide(self.bullets, self.aliens, False, True)
         if not self.aliens:
             self.bullets.empty()
             self._create_fleet()
+            self.increase_speed()
 
     def _check_events(self):
         """Handles all events."""
@@ -142,18 +143,19 @@ class Game:
     def _create_fleet(self):
         """Creates alien fleet."""
         alien = Alien(self)
-        current_x = alien.rect.x
-        current_y = alien.rect.y
-        while current_y < (self.settings.screen_height - alien.image.get_height() * 5):
-            while current_x < (self.settings.screen_width - alien.image.get_width()):
+        alien_width, alien_height = alien.rect.size
+        current_x, current_y = alien_width, alien_height
+        while current_y < (self.settings.screen_height - 5 * alien_height):
+            while current_x < (self.settings.screen_width - 2 * alien_width):
                 self._create_alien(current_x, current_y)
-                current_x += alien.image.get_width() * 1.5
-            current_x = alien.rect.x
-            current_y += alien.image.get_height() * 1.5
+                current_x += 2 * alien_width
+            current_x = alien_width
+            current_y += 2 * alien_height
 
     def _create_alien(self, x_position, y_position):
         """Creates one alien."""
         new_alien = Alien(self)
+        new_alien.x = x_position
         new_alien.rect.x = x_position
         new_alien.rect.y = y_position
         self.aliens.add(new_alien)
@@ -204,3 +206,7 @@ class Game:
         for alien in self.aliens.sprites():
             if alien.rect.bottom >= self.settings.screen_height:
                 return True
+
+    def increase_speed(self):
+        """Increases game speed."""
+        self.settings.aliens.speed *= self.settings.speedup_scale

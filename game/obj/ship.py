@@ -18,7 +18,7 @@ class Ship:
     def blitme(self):
         """Draws the ship."""
         self.screen.blit(self.image, self.rect)
-
+ 
     def update(self):
         """Moves the ship."""
         if self.moving_right and self.rect.right < self.screen_rect.right:

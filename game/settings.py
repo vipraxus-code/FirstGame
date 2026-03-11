@@ -7,18 +7,19 @@ class Settings:
         self.bg_color: int = (192, 192, 192)
         self.fps: int = 180
         self.caption: str = "SPACE SHIP"
-        self.ship: Settings = SettingsShip()
-        self.aliens: Settings = SettingsAliens()
-
+        self.ship: SettingsShip = SettingsShip()
+        self.aliens: SettingsAliens = SettingsAliens()
+        self.speedup_scale: float = 1.1
 class SettingsAliens:
     """Aliens settings"""
     def __init__(self):
         self.start_position: int = 85
         self.sprite_scale_x: float = 0.192
         self.sprite_scale_y: float = 0.192
-        self.speed: int = 1
+        self.default_speed = 1
+        self.speed: float = 1
         self.drop_speed: int = 5
-        self.fleet_direction: int = 1 # 1=right, -1=left
+        self.fleet_direction: int = 1
 
 class SettingsShip:
     """Ship settings"""
